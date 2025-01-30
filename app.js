@@ -20,8 +20,8 @@ const itemsListUL = document.querySelector(".items-list")
 const checkBox = document.getElementsByClassName("custom-checbox")
 const deleteBtn = document.getElementsByClassName("delete-btn")
 
+
 let allTodos = getTodos()
-console.log(allTodos)
 updateTodoList()
 
 
@@ -66,7 +66,7 @@ function updateTodoList(){ //Jakákoliv změna v poli allTodos povede ke změne 
 
 function createTodoItem(todo, todoIndex){ //argument todo reprezentuje obsah nové to do položky - todoLI
 
-    const todoId = "todo-"+todoIndex //Vytvoř proměnou, která reprezentuje ID každé nové vytvořené TodoItem
+    const todoId = "todo-"+ todoIndex //Vytvoř proměnou, která reprezentuje ID každé nové vytvořené TodoItem
     const todoLI = document.createElement("li") //vytvoř v HTML element <li>
 
     // todoLI.innerText = todo // This makes the todoLI element display the value of todo as its visible text content.
@@ -86,6 +86,13 @@ function createTodoItem(todo, todoIndex){ //argument todo reprezentuje obsah nov
                 </button>
                         ` //Vem proměnnou todoLI, která reprezentuje element vytvořený element LI a vraž do ní tenhle kus HTML - obsah LI
 
+    const deleteBtn = todoLI.querySelector(".delete-btn") //Zaměřím delete btn ne v původním HTML ale v HTML vytvořeném v JS
+
+    deleteBtn.addEventListener("click", ()=>{
+        deleteTodoItem(todoIndex)
+    })
+
+
     return(todoLI) //vrať mi výstup proměnné todoLI o kterou se v této funkci jedná
 }
 
@@ -100,16 +107,27 @@ function getTodos() { //Nahraj uložené položky to do listu z local storage
 
     const loadedTodos = localStorage.getItem("todo items") || "[]" //Nahraj položky to do listu do proměnné loadedTodos, a pokud žádné k nahrání nejsou, vytvoř nové prázdné pole
 
-    // if (!loadedTodos) {
-    //     return []; // If no data exists, return an empty array
-    // }
+    if (!loadedTodos) {
+        return []; // If no data exists, return an empty array
+    }
 
-    // try {
-    //     return JSON.parse(loadedTodos); // Try parsing the JSON
-    // } catch (error) {
-    //     console.error("Error parsing JSON from localStorage:", error);
-    //     return []; // Return an empty array if parsing fails
-    // }
+    try {
+        return JSON.parse(loadedTodos); //Zkus promeňit JSON žabáka loadedTodos zpátky na JS prince a vydej ho do placu
+    } catch (error) {
+        console.error("Error parsing JSON from localStorage:", error);
+        return []; // Return an empty array if parsing fails
+    }
 
-    return JSON.parse(loadedTodos) //Promeň JSON žabáka loadedTodos zpátky na JS prince a vydej ho do placu
+    return JSON.parse(loadedTodos) 
+}
+
+function deleteTodoItem(todoIndex) {
+    allTodos = allTodos.filter( (_,i ) => i !== todoIndex ) //Přepiš pole allTodoes - vytvoř kopii, která vyfiltruje prvky, které neprojdou testem ve filtru.
+
+//     The callback function inside filter() takes two parameters:
+//     _ → Represents the current item in the array (not used in this  case, hence _).
+//     i → Represents the index of the current item in the array.
+//     Jednoduše, je to zavedený způsob jak smazat něco z pole, bez vedlejších efektů!
+    saveTodos()
+    updateTodoList()
 }
